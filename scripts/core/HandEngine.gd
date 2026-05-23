@@ -16,7 +16,7 @@ func player_action(action: String, sizing: float = 0.0) -> void:
 		"check":  _resolve_check()
 		"call":   _resolve_call()
 		"bet":    _resolve_bet(sizing)
-		"raise":  _resolve_bet(sizing)  # raise uses same bet resolution
+		"raise":  _resolve_bet(sizing)
 
 func _resolve_fold() -> void:
 	var result = HandResult.new()
@@ -40,18 +40,21 @@ func _resolve_call() -> void:
 	emit_signal("hand_resolved", result)
 
 func _resolve_bet(sizing: float) -> void:
-	var enemy_freqs = _calc_enemy_frequencies(sizing)
+	var freq_data = _calc_enemy_frequencies(sizing)
 	var roll = randi() % 100
-	var enemy_calls = roll < enemy_freqs.call_pct
-	emit_signal("enemy_responding", enemy_freqs.call_pct, enemy_freqs.fold_pct, roll)
+	var enemy_calls = roll < freq_data.call_pct
+	emit_signal("enemy_responding", freq_data.call_pct, freq_data.fold_pct, roll)
 
 	var result = HandResult.new()
 	result.action_taken = "bet"
 	result.bet_sizing = sizing
 	result.enemy_called = enemy_calls
-	result.enemy_call_pct = enemy_freqs.call_pct
-	result.enemy_fold_pct = enemy_freqs.fold_pct
+	result.enemy_call_pct = freq_data.call_pct
+	result.enemy_fold_pct = freq_data.fold_pct
 	result.roll = roll
+	result.base_call_pct = freq_data.base_call_pct
+	result.base_fold_pct = freq_data.base_fold_pct
+	result.modifiers = freq_data.modifiers
 
 	if enemy_calls:
 		result.profit = _current_spot.get("bet_called_profit", _current_spot.get("raise_called_profit", -int(sizing)))
@@ -62,27 +65,49 @@ func _resolve_bet(sizing: float) -> void:
 
 	emit_signal("hand_resolved", result)
 
-func _calc_enemy_frequencies(sizing: float) -> Dictionary:
+func _calc_enemy_frequencies(_sizing: float) -> Dictionary:
 	var base_call = _current_spot.get("base_call_pct", 50.0)
 	var base_fold = 100.0 - base_call
+	var modifiers: Array = []
 
 	var gs = get_node("/root/GameState")
-	base_fold += gs.table_image["fear"] * 3.0
-	base_call += gs.table_image["suspicion"] * 3.0
+
+	var fear = gs.table_image["fear"]
+	if fear != 0:
+		var delta = fear * 3.0
+		base_fold += delta
+		modifiers.append("Fear %+d: Fold %+.0f%%" % [fear, delta])
+
+	var suspicion = gs.table_image["suspicion"]
+	if suspicion != 0:
+		var delta = suspicion * 3.0
+		base_call += delta
+		modifiers.append("Suspicion %+d: Call %+.0f%%" % [suspicion, delta])
 
 	var enemy_trait = _current_spot.get("enemy_trait", {})
-	base_call += enemy_trait.get("call_mod", 0.0)
-	base_fold += enemy_trait.get("fold_mod", 0.0)
+	var call_mod = enemy_trait.get("call_mod", 0.0)
+	var fold_mod = enemy_trait.get("fold_mod", 0.0)
+	if call_mod != 0.0:
+		base_call += call_mod
+		modifiers.append("%s: Call %+.0f%%" % [enemy_trait.get("name", "Enemy"), call_mod])
+	if fold_mod != 0.0:
+		base_fold += fold_mod
+		modifiers.append("%s: Fold %+.0f%%" % [enemy_trait.get("name", "Enemy"), fold_mod])
 
 	if gs.has_relic("fear_aura"):
 		base_fold += 10.0
+		modifiers.append("Fear Aura: Fold +10%")
 	if gs.has_relic("sticky_table"):
 		base_call += 15.0
+		modifiers.append("Sticky Table: Call +15%")
 
 	var total = base_call + base_fold
 	return {
 		"call_pct": clamp(base_call / total * 100.0, 0.0, 100.0),
 		"fold_pct": clamp(base_fold / total * 100.0, 0.0, 100.0),
+		"base_call_pct": _current_spot.get("base_call_pct", 50.0),
+		"base_fold_pct": 100.0 - _current_spot.get("base_call_pct", 50.0),
+		"modifiers": modifiers,
 	}
 
 
@@ -95,6 +120,9 @@ class HandResult:
 	var enemy_called: bool = false
 	var enemy_call_pct: float = 0.0
 	var enemy_fold_pct: float = 0.0
+	var base_call_pct: float = 0.0
+	var base_fold_pct: float = 0.0
+	var modifiers: Array = []
 	var roll: int = 0
 
 	func variance() -> float:

@@ -26,10 +26,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -280.0
-offset_right = 240.0
-offset_bottom = 280.0
+offset_left = -260.0
+offset_top = -340.0
+offset_right = 260.0
+offset_bottom = 340.0
 
 [node name="Title" type="Label" parent="Panel"]
 horizontal_alignment = 1
@@ -40,56 +40,61 @@ text = "Hand Result"
 name = "ProfitLabel"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 20
-text = "Profit: +40bb"
+text = ""
 
 [node name="EVLabel" type="Label" parent="Panel"]
 name = "EVLabel"
 horizontal_alignment = 1
-text = "Decision EV: +11"
-
-[node name="ExploitEVLabel" type="Label" parent="Panel"]
-name = "ExploitEVLabel"
-horizontal_alignment = 1
-text = "Exploit EV: +24"
+text = ""
 
 [node name="VarianceLabel" type="Label" parent="Panel"]
 name = "VarianceLabel"
 horizontal_alignment = 1
-text = "Variance: +5"
+text = ""
+
+[node name="VerdictLabel" type="Label" parent="Panel"]
+name = "VerdictLabel"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+text = ""
 
 [node name="Divider" type="HSeparator" parent="Panel"]
 
-[node name="EnemyTitle" type="Label" parent="Panel"]
+[node name="EnemySection" type="VBoxContainer" parent="Panel"]
+name = "EnemySection"
+visible = false
+
+[node name="EnemyTitle" type="Label" parent="Panel/EnemySection"]
 horizontal_alignment = 1
 text = "Enemy Response"
 
-[node name="EnemyFreqLabel" type="Label" parent="Panel"]
-name = "EnemyFreqLabel"
+[node name="EnemyBaseLabel" type="Label" parent="Panel/EnemySection"]
+name = "EnemyBaseLabel"
 horizontal_alignment = 1
-text = "Call 24% / Fold 76%"
+text = ""
 
-[node name="EnemyModsLabel" type="Label" parent="Panel"]
+[node name="EnemyModsLabel" type="Label" parent="Panel/EnemySection"]
 name = "EnemyModsLabel"
 horizontal_alignment = 1
 text = ""
 
-[node name="RollLabel" type="Label" parent="Panel"]
+[node name="EnemyFreqLabel" type="Label" parent="Panel/EnemySection"]
+name = "EnemyFreqLabel"
+horizontal_alignment = 1
+text = ""
+
+[node name="RollLabel" type="Label" parent="Panel/EnemySection"]
 name = "RollLabel"
 horizontal_alignment = 1
-text = "Roll: 61 → Fold"
+theme_override_font_sizes/font_size = 18
+text = ""
 
 [node name="Divider2" type="HSeparator" parent="Panel"]
 
 [node name="ImageDeltaLabel" type="Label" parent="Panel"]
 name = "ImageDeltaLabel"
 horizontal_alignment = 1
-text = "Fear +1  Suspicion +2"
-
-[node name="VerdictLabel" type="Label" parent="Panel"]
-name = "VerdictLabel"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 16
-text = "Great exploit."
+text = ""
 
 [node name="Divider3" type="HSeparator" parent="Panel"]
 
@@ -116,4 +121,6 @@ text = "Show Value"
 [node name="ContinueBtn" type="Button" parent="Panel"]
 name = "ContinueBtn"
 custom_minimum_size = Vector2(200, 50)
+horizontal_alignment = 1
 text = "Next Hand →"
+visible = false

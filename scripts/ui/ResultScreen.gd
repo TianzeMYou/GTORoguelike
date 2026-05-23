@@ -16,15 +16,24 @@ func show_result(result: Object) -> void:
 	$Panel/VarianceLabel.text = "Variance: %+.1f" % variance
 
 	if result.action_taken == "bet":
-		$Panel/EnemyFreqLabel.text = "Call %.0f%% / Fold %.0f%%" % [result.enemy_call_pct, result.enemy_fold_pct]
+		# Base frequencies
+		$Panel/EnemyBaseLabel.text = "Base GTO: Call %.0f%% / Fold %.0f%%" % [result.base_call_pct, result.base_fold_pct]
+
+		# Modifiers list
+		if result.modifiers.size() > 0:
+			$Panel/EnemyModsLabel.text = "\n".join(result.modifiers)
+		else:
+			$Panel/EnemyModsLabel.text = "(no modifiers)"
+
+		# Final frequencies and roll
+		$Panel/EnemyFreqLabel.text = "Final: Call %.0f%% / Fold %.0f%%" % [result.enemy_call_pct, result.enemy_fold_pct]
 		$Panel/RollLabel.text = "Roll: %d → %s" % [result.roll, "Call" if result.enemy_called else "Fold"]
+		$Panel/EnemySection.visible = true
 	else:
-		$Panel/EnemyFreqLabel.text = ""
-		$Panel/RollLabel.text = ""
+		$Panel/EnemySection.visible = false
 
 	$Panel/VerdictLabel.text = _verdict(profit, ev)
 
-	# Muck/show only after winning without showdown
 	if result.action_taken == "bet" and not result.enemy_called:
 		$Panel/MuckShowButtons.visible = true
 		$Panel/MuckShowButtons/MuckBtn.pressed.connect(_on_muck)
