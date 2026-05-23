@@ -46,7 +46,7 @@ func _build_card_display(container: Node, cards: Array) -> void:
 	for card in cards:
 		var lbl = Label.new()
 		lbl.text = card
-		lbl.theme_override_font_sizes = {"font_size": 28}
+		lbl.add_theme_font_size_override("font_size", 28)
 		lbl.custom_minimum_size = Vector2(60, 80)
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -73,12 +73,11 @@ func _on_sizing_chosen(btn_name: String) -> void:
 func _on_enemy_responding(call_pct: float, fold_pct: float, roll: int) -> void:
 	var roll_display = $EnemyRollDisplay
 	roll_display.visible = true
-	roll_display/FreqLabel.text = "Call %.0f%% / Fold %.0f%%" % [call_pct, fold_pct]
-	roll_display/RollLabel.text = "Roll: %d" % roll
-	roll_display/RollResultLabel.text = "→ %s" % ("Call" if roll < call_pct else "Fold")
+	roll_display.get_node("FreqLabel").text = "Call %.0f%% / Fold %.0f%%" % [call_pct, fold_pct]
+	roll_display.get_node("RollLabel").text = "Roll: %d" % roll
+	roll_display.get_node("RollResultLabel").text = "→ %s" % ("Call" if roll < call_pct else "Fold")
 	$ActionArea.visible = false
 	await get_tree().create_timer(1.8).timeout
-	_engine.hand_resolved  # result will fire through signal
 
 func _on_hand_resolved(result: Object) -> void:
 	var gs = get_node("/root/GameState")
