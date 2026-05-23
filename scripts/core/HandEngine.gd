@@ -23,6 +23,7 @@ func _resolve_fold() -> void:
 	result.action_taken = "fold"
 	result.profit = -_current_spot.get("amount_to_call", 0)
 	result.ev = _current_spot.get("ev_fold", -float(_current_spot.get("amount_to_call", 0)))
+	_stamp_cards(result)
 	emit_signal("hand_resolved", result)
 
 func _resolve_check() -> void:
@@ -30,6 +31,7 @@ func _resolve_check() -> void:
 	result.action_taken = "check"
 	result.profit = 0
 	result.ev = _current_spot.get("ev_check", 0.0)
+	_stamp_cards(result)
 	emit_signal("hand_resolved", result)
 
 func _resolve_call() -> void:
@@ -44,7 +46,12 @@ func _resolve_call() -> void:
 	result.profit = pot + villain_bet if result.player_wins else -to_call
 	result.showdown = true
 	result.villain_hand = _current_spot.get("villain_hand", [])
+	_stamp_cards(result)
 	emit_signal("hand_resolved", result)
+
+func _stamp_cards(result: HandResult) -> void:
+	result.player_hand = _current_spot.get("player_hand", [])
+	result.board = _current_spot.get("board", [])
 
 func _resolve_bet(sizing: float) -> void:
 	var freq_data = _calc_enemy_frequencies(sizing)
@@ -80,6 +87,7 @@ func _resolve_bet(sizing: float) -> void:
 		result.profit = pot
 		result.showdown = false
 
+	_stamp_cards(result)
 	emit_signal("hand_resolved", result)
 
 func _calc_enemy_frequencies(_sizing: float) -> Dictionary:
@@ -144,6 +152,8 @@ class HandResult:
 	var showdown: bool = false
 	var player_wins: bool = false
 	var villain_hand: Array = []
+	var player_hand: Array = []
+	var board: Array = []
 
 	func variance() -> float:
 		return profit - ev

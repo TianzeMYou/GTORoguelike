@@ -3,6 +3,9 @@ extends Control
 signal continue_pressed
 
 func show_result(result: Object) -> void:
+	_build_card_display($CardArea/BoardCards, result.board)
+	_build_card_display($CardArea/PlayerCards, result.player_hand)
+
 	var profit = result.profit
 	var ev = result.ev
 	var variance = result.variance()
@@ -62,6 +65,18 @@ func _verdict(profit: int, ev: float) -> String:
 		return "Bad decision. Lucky result."
 	else:
 		return "Bad decision. Bad result."
+
+func _build_card_display(container: Node, cards: Array) -> void:
+	for child in container.get_children():
+		child.queue_free()
+	for card in cards:
+		var lbl = Label.new()
+		lbl.text = card
+		lbl.add_theme_font_size_override("font_size", 24)
+		lbl.custom_minimum_size = Vector2(50, 70)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		container.add_child(lbl)
 
 func _on_muck() -> void:
 	var gs = get_node("/root/GameState")
