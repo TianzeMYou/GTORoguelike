@@ -18,7 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.05, 0.1, 0.92)
+color = Color(0.05, 0.05, 0.1, 0.95)
 
 [node name="Panel" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -26,25 +26,36 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -340.0
-offset_right = 260.0
-offset_bottom = 340.0
+offset_left = -280.0
+offset_top = -320.0
+offset_right = 280.0
+offset_bottom = 320.0
 
 [node name="Title" type="Label" parent="Panel"]
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 26
 text = "Hand Result"
+
+[node name="ActionLabel" type="Label" parent="Panel"]
+name = "ActionLabel"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+text = ""
+modulate = Color(0.8, 0.8, 0.8, 1)
+
+[node name="Spacer1" type="Control" parent="Panel"]
+custom_minimum_size = Vector2(0, 8)
 
 [node name="ProfitLabel" type="Label" parent="Panel"]
 name = "ProfitLabel"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 28
 text = ""
 
 [node name="EVLabel" type="Label" parent="Panel"]
 name = "EVLabel"
 horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
 text = ""
 
 [node name="VarianceLabel" type="Label" parent="Panel"]
@@ -66,6 +77,8 @@ visible = false
 
 [node name="EnemyTitle" type="Label" parent="Panel/EnemySection"]
 horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+modulate = Color(0.8, 0.8, 0.8, 1)
 text = "Enemy Response"
 
 [node name="EnemyBaseLabel" type="Label" parent="Panel/EnemySection"]
@@ -76,6 +89,7 @@ text = ""
 [node name="EnemyModsLabel" type="Label" parent="Panel/EnemySection"]
 name = "EnemyModsLabel"
 horizontal_alignment = 1
+modulate = Color(0.9, 0.8, 0.5, 1)
 text = ""
 
 [node name="EnemyFreqLabel" type="Label" parent="Panel/EnemySection"]
@@ -86,7 +100,7 @@ text = ""
 [node name="RollLabel" type="Label" parent="Panel/EnemySection"]
 name = "RollLabel"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = ""
 
 [node name="Divider2" type="HSeparator" parent="Panel"]
@@ -94,9 +108,8 @@ text = ""
 [node name="ImageDeltaLabel" type="Label" parent="Panel"]
 name = "ImageDeltaLabel"
 horizontal_alignment = 1
+modulate = Color(0.6, 1.0, 0.8, 1)
 text = ""
-
-[node name="Divider3" type="HSeparator" parent="Panel"]
 
 [node name="MuckShowButtons" type="HBoxContainer" parent="Panel"]
 name = "MuckShowButtons"
@@ -120,7 +133,6 @@ text = "Show Value"
 
 [node name="ContinueBtn" type="Button" parent="Panel"]
 name = "ContinueBtn"
-custom_minimum_size = Vector2(200, 50)
-horizontal_alignment = 1
+custom_minimum_size = Vector2(220, 55)
 text = "Next Hand →"
 visible = false
