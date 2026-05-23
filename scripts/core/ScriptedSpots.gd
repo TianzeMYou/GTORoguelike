@@ -9,6 +9,7 @@ const SPOTS: Array = [
 		"name": "River Bluff Spot",
 		"situation": "Checked to you on the river. Villain's range is capped.",
 		"action_type": "bet",
+		"street": "river",
 		"player_hand": ["7h", "6h"],
 		"villain_hand": ["Qd", "Jc"],  # top of villain's capped range
 		"board": ["Ah", "Kd", "7c", "3s", "2d"],
@@ -26,6 +27,7 @@ const SPOTS: Array = [
 		"name": "River Value Spot",
 		"situation": "Checked to you on the river. You have top pair top kicker.",
 		"action_type": "bet",
+		"street": "river",
 		"player_hand": ["Ah", "Kc"],
 		"villain_hand": ["9d", "9h"],  # middle set — villain has a strong hand too
 		"board": ["As", "7d", "2c", "9h", "3s"],
@@ -43,6 +45,7 @@ const SPOTS: Array = [
 		"name": "Facing River Bet",
 		"situation": "Villain bets 20bb into a 30bb pot on the river. You have second pair.",
 		"action_type": "call",
+		"street": "river",
 		"player_hand": ["Kh", "7c"],
 		"villain_hand": ["Ac", "Qh"],  # villain has top pair — often bluffing range too
 		"board": ["As", "7d", "2c", "9h", "3s"],
@@ -64,6 +67,7 @@ const SPOTS: Array = [
 		"name": "Facing Turn C-Bet",
 		"situation": "Villain continuation bets 15bb into a 20bb pot on the turn. You have a flush draw.",
 		"action_type": "call",
+		"street": "turn",
 		"player_hand": ["Jh", "9h"],
 		"villain_hand": ["Ac", "Kd"],  # villain has top pair, no flush draw
 		"board": ["Ah", "6h", "3c", "Kd"],
@@ -85,6 +89,7 @@ const SPOTS: Array = [
 		"name": "Short Stack Shove/Fold",
 		"situation": "25bb effective. Villain raises to 3bb preflop. You have AJo in the big blind.",
 		"action_type": "call",
+		"street": "preflop",
 		"player_hand": ["Ah", "Jd"],
 		"villain_hand": ["Kc", "Qs"],  # villain has KQo — AJ is ahead
 		"board": [],

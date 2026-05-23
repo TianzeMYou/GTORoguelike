@@ -29,8 +29,18 @@ func _resolve_fold() -> void:
 func _resolve_check() -> void:
 	var result = HandResult.new()
 	result.action_taken = "check"
-	result.profit = 0
 	result.ev = _current_spot.get("ev_check", 0.0)
+	var is_river = _current_spot.get("street", "") == "river"
+	if is_river:
+		var equity = _current_spot.get("equity", 0.5)
+		var pot = _current_spot.get("pot", 0)
+		result.player_wins = randf() < equity
+		result.profit = pot if result.player_wins else 0
+		result.showdown = true
+		result.villain_hand = _current_spot.get("villain_hand", [])
+	else:
+		result.profit = 0
+		result.showdown = false
 	_stamp_cards(result)
 	emit_signal("hand_resolved", result)
 
