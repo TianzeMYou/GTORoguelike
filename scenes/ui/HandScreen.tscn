@@ -1,0 +1,217 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/HandScreen.gd" id="1"]
+
+[node name="HandScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.08, 0.15, 0.08, 1)
+
+[node name="TableImage" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 180.0
+offset_bottom = 140.0
+
+[node name="Label" type="Label" parent="TableImage"]
+text = "TABLE IMAGE"
+theme_override_font_sizes/font_size = 12
+
+[node name="FearLabel" type="Label" parent="TableImage"]
+name = "FearLabel"
+text = "Fear: 0"
+
+[node name="SuspicionLabel" type="Label" parent="TableImage"]
+name = "SuspicionLabel"
+text = "Suspicion: 0"
+
+[node name="MysteryLabel" type="Label" parent="TableImage"]
+name = "MysteryLabel"
+text = "Mystery: 0"
+
+[node name="BankrollLabel" type="Label" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -180.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 50.0
+horizontal_alignment = 2
+text = "Bankroll: 1000"
+
+[node name="SpotName" type="Label" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -200.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 50.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+text = "River Bluff — Deep Stack"
+
+[node name="Board" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -250.0
+offset_top = 60.0
+offset_right = 250.0
+offset_bottom = 160.0
+alignment = 1
+
+[node name="PlayerHand" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -100.0
+offset_top = 170.0
+offset_right = 100.0
+offset_bottom = 270.0
+alignment = 1
+
+[node name="PotStackInfo" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -150.0
+offset_top = 280.0
+offset_right = 150.0
+offset_bottom = 360.0
+
+[node name="PotLabel" type="Label" parent="PotStackInfo"]
+name = "PotLabel"
+horizontal_alignment = 1
+text = "Pot: 40bb"
+
+[node name="StackLabel" type="Label" parent="PotStackInfo"]
+name = "StackLabel"
+horizontal_alignment = 1
+text = "Stack: 140bb"
+
+[node name="EnemyInfo" type="Label" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -150.0
+offset_top = 370.0
+offset_right = 150.0
+offset_bottom = 400.0
+horizontal_alignment = 1
+text = "Enemy: Scared Money"
+
+[node name="ActionArea" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -220.0
+offset_right = 300.0
+offset_bottom = -20.0
+alignment = 2
+
+[node name="SizingMeter" type="HBoxContainer" parent="ActionArea"]
+name = "SizingMeter"
+visible = false
+alignment = 1
+
+[node name="Btn25" type="Button" parent="ActionArea/SizingMeter"]
+name = "Btn25"
+text = "25% pot"
+
+[node name="Btn50" type="Button" parent="ActionArea/SizingMeter"]
+name = "Btn50"
+text = "50% pot"
+
+[node name="Btn75" type="Button" parent="ActionArea/SizingMeter"]
+name = "Btn75"
+text = "75% pot"
+
+[node name="BtnPot" type="Button" parent="ActionArea/SizingMeter"]
+name = "BtnPot"
+text = "Pot"
+
+[node name="Btn150" type="Button" parent="ActionArea/SizingMeter"]
+name = "Btn150"
+text = "150% pot"
+
+[node name="BtnAllin" type="Button" parent="ActionArea/SizingMeter"]
+name = "BtnAllin"
+text = "All-In"
+
+[node name="MainButtons" type="HBoxContainer" parent="ActionArea"]
+alignment = 1
+
+[node name="FoldBtn" type="Button" parent="ActionArea/MainButtons"]
+name = "FoldBtn"
+custom_minimum_size = Vector2(140, 60)
+text = "FOLD"
+
+[node name="CallBtn" type="Button" parent="ActionArea/MainButtons"]
+name = "CallBtn"
+custom_minimum_size = Vector2(140, 60)
+text = "CALL"
+
+[node name="BetBtn" type="Button" parent="ActionArea/MainButtons"]
+name = "BetBtn"
+custom_minimum_size = Vector2(140, 60)
+text = "BET / RAISE"
+
+[node name="EnemyRollDisplay" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -80.0
+offset_right = 160.0
+offset_bottom = 80.0
+visible = false
+
+[node name="FreqLabel" type="Label" parent="EnemyRollDisplay"]
+name = "FreqLabel"
+horizontal_alignment = 1
+text = "Call 45% / Fold 55%"
+
+[node name="RollLabel" type="Label" parent="EnemyRollDisplay"]
+name = "RollLabel"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+text = "Roll: 61"
+
+[node name="RollResultLabel" type="Label" parent="EnemyRollDisplay"]
+name = "RollResultLabel"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+text = "→ Fold"
