@@ -20,25 +20,6 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.05, 0.05, 0.1, 0.95)
 
-[node name="CardArea" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchor_left = 0.5
-anchor_top = 0.0
-anchor_right = 0.5
-anchor_bottom = 0.0
-offset_left = -250.0
-offset_top = 20.0
-offset_right = 250.0
-offset_bottom = 160.0
-
-[node name="BoardCards" type="HBoxContainer" parent="CardArea"]
-name = "BoardCards"
-alignment = 1
-
-[node name="PlayerCards" type="HBoxContainer" parent="CardArea"]
-name = "PlayerCards"
-alignment = 1
-
 [node name="Panel" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchor_left = 0.5
@@ -54,6 +35,17 @@ offset_bottom = 320.0
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 26
 text = "Hand Result"
+
+[node name="CardArea" type="VBoxContainer" parent="Panel"]
+name = "CardArea"
+
+[node name="BoardCards" type="HBoxContainer" parent="Panel/CardArea"]
+name = "BoardCards"
+alignment = 1
+
+[node name="PlayerCards" type="HBoxContainer" parent="Panel/CardArea"]
+name = "PlayerCards"
+alignment = 1
 
 [node name="ActionLabel" type="Label" parent="Panel"]
 name = "ActionLabel"

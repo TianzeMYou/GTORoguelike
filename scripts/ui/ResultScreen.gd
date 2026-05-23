@@ -3,8 +3,8 @@ extends Control
 signal continue_pressed
 
 func show_result(result: Object) -> void:
-	_build_card_display($CardArea/BoardCards, result.board)
-	_build_card_display($CardArea/PlayerCards, result.player_hand)
+	_build_card_display($Panel/CardArea/BoardCards, result.board)
+	_build_card_display($Panel/CardArea/PlayerCards, result.player_hand)
 
 	var profit = result.profit
 	var ev = result.ev
