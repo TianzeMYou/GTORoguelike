@@ -12,7 +12,8 @@ func _ready() -> void:
 	_engine.enemy_responding.connect(_on_enemy_responding)
 
 	var spots = preload("res://scripts/core/ScriptedSpots.gd").new()
-	_spot = spots.get_random_spot()
+	var room_data = get_node("/root/GameState").get_current_room_data()
+	_spot = spots.get_spot_for_depth(room_data.get("stack", "normal"))
 	spots.free()
 
 	_setup_ui()
@@ -28,6 +29,20 @@ func _ready() -> void:
 		btn.pressed.connect(_on_sizing_chosen.bind(btn.name))
 
 func _setup_ui() -> void:
+	var gs = get_node("/root/GameState")
+	var room_data = gs.get_current_room_data()
+
+	$RoomInfo/RoomNameLabel.text = "Room %d/6: %s" % [gs.current_room + 1, room_data.get("name", "")]
+	$RoomInfo/HandCountLabel.text = "Hand %d/%d" % [gs.hands_in_room + 1, gs.HANDS_PER_ROOM]
+	$RoomInfo/EnemyFlavorLabel.text = get_node("/root/EnemyData").get_enemy(room_data.get("enemy", "pro_reg")).get("flavor", "")
+
+	# Show relics
+	var relic_names = []
+	for r in gs.relics:
+		var rd = get_node("/root/RelicData").get_relic(r)
+		relic_names.append(rd.get("name", r))
+	$RelicBar.text = "Relics: " + (", ".join(relic_names) if relic_names.size() > 0 else "None")
+
 	$SpotName.text = _spot.get("name", "")
 	$Situation.text = _spot.get("situation", "")
 	$EnemyInfo.text = "Enemy: " + _spot.get("enemy_trait", {}).get("name", "Unknown")
@@ -42,7 +57,6 @@ func _setup_ui() -> void:
 	else:
 		$PotStackInfo/VillainBetLabel.visible = false
 
-	var gs = get_node("/root/GameState")
 	$TableImage/FearLabel.text = "Fear: %d" % gs.table_image["fear"]
 	$TableImage/SuspicionLabel.text = "Suspicion: %d" % gs.table_image["suspicion"]
 	$TableImage/MysteryLabel.text = "Mystery: %d" % gs.table_image["mystery"]
@@ -98,11 +112,8 @@ func _on_enemy_responding(call_pct: float, fold_pct: float, roll: int) -> void:
 	roll_display.visible = true
 	roll_display.get_node("FreqLabel").text = "Call %.0f%% / Fold %.0f%%" % [call_pct, fold_pct]
 	roll_display.get_node("RollLabel").text = "Roll: %d" % roll
-	roll_display.get_node("RollResultLabel").text = "→ %s" % ("Call" if roll < call_pct else "Fold")
+	roll_display.get_node("RollResultLabel").text = "-> %s" % ("Call" if roll < call_pct else "Fold")
 	$ActionArea.visible = false
 
 func _on_hand_resolved(result: Object) -> void:
-	var gs = get_node("/root/GameState")
-	gs.bankroll += result.profit
-	gs.ev_score += result.ev
 	emit_signal("hand_complete", result)

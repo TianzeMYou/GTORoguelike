@@ -24,7 +24,7 @@ func show_result(result: Object) -> void:
 		$Panel/EnemySection/EnemyBaseLabel.text = "Base GTO: Call %.0f%% / Fold %.0f%%" % [result.base_call_pct, result.base_fold_pct]
 		$Panel/EnemySection/EnemyModsLabel.text = "\n".join(result.modifiers) if result.modifiers.size() > 0 else "(no modifiers active)"
 		$Panel/EnemySection/EnemyFreqLabel.text = "Final: Call %.0f%% / Fold %.0f%%" % [result.enemy_call_pct, result.enemy_fold_pct]
-		$Panel/EnemySection/RollLabel.text = "Roll: %d → %s" % [result.roll, "Call" if result.enemy_called else "Fold"]
+		$Panel/EnemySection/RollLabel.text = "Roll: %d -> %s" % [result.roll, "Call" if result.enemy_called else "Fold"]
 		$Panel/EnemySection.visible = true
 	elif result.action_taken == "call":
 		$Panel/ActionLabel.text = "You called"
@@ -80,16 +80,19 @@ func _build_card_display(container: Node, cards: Array) -> void:
 
 func _on_muck() -> void:
 	var gs = get_node("/root/GameState")
-	gs.apply_table_image_delta({"mystery": 1})
-	_finish_muck_show("Mystery +1")
+	var mystery_gain = 2 if gs.has_relic("muck_artist") else 1
+	gs.apply_table_image_delta({"mystery": mystery_gain})
+	_finish_muck_show("Mystery +%d%s" % [mystery_gain, " (Muck Artist)" if mystery_gain == 2 else ""])
 
 func _on_show_bluff() -> void:
 	var gs = get_node("/root/GameState")
+	gs.on_show_bluff()
 	gs.apply_table_image_delta({"suspicion": 3, "fear": -1})
 	_finish_muck_show("Suspicion +3  Fear -1")
 
 func _on_show_value() -> void:
 	var gs = get_node("/root/GameState")
+	gs.on_show_value()
 	gs.apply_table_image_delta({"fear": 2, "suspicion": -1})
 	_finish_muck_show("Fear +2  Suspicion -1")
 

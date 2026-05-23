@@ -62,6 +62,7 @@ func _resolve_call() -> void:
 func _stamp_cards(result: HandResult) -> void:
 	result.player_hand = _current_spot.get("player_hand", [])
 	result.board = _current_spot.get("board", [])
+	result.pot = _current_spot.get("pot", 0)
 
 func _resolve_bet(sizing: float) -> void:
 	var freq_data = _calc_enemy_frequencies(sizing)
@@ -79,14 +80,29 @@ func _resolve_bet(sizing: float) -> void:
 	result.base_call_pct = freq_data.base_call_pct
 	result.base_fold_pct = freq_data.base_fold_pct
 	result.modifiers = freq_data.modifiers
+	result.enemy_name = freq_data.get("enemy_name", "")
+	result.enemy_flavor = freq_data.get("enemy_flavor", "")
 
 	var pot = _current_spot.get("pot", 0)
 	var equity = _current_spot.get("equity", 0.5)
 	var fold_pct = freq_data.fold_pct / 100.0
 	var call_pct = freq_data.call_pct / 100.0
 
-	# EV(bet) = fold% × pot + call% × (equity × (pot + 2×bet) - bet)
+	# EV(bet) = fold% x pot + call% x (equity x (pot + 2xbet) - bet)
 	result.ev = fold_pct * pot + call_pct * (equity * (pot + 2.0 * sizing) - sizing)
+
+	var gs = get_node("/root/GameState")
+
+	# Pressure Cooker stacks update
+	if gs.has_relic("pressure_cooker"):
+		if sizing >= pot * 0.75:
+			gs.pressure_cooker_stacks = mini(gs.pressure_cooker_stacks + 1, 4)
+		else:
+			gs.pressure_cooker_stacks = 0
+
+	# Glass Cannon check
+	if gs.has_relic("glass_cannon") and sizing > pot:
+		result.glass_cannon_active = true
 
 	if enemy_calls:
 		result.player_wins = randf() < equity
@@ -100,7 +116,7 @@ func _resolve_bet(sizing: float) -> void:
 	_stamp_cards(result)
 	emit_signal("hand_resolved", result)
 
-func _calc_enemy_frequencies(_sizing: float) -> Dictionary:
+func _calc_enemy_frequencies(sizing: float) -> Dictionary:
 	var base_call = _current_spot.get("base_call_pct", 50.0)
 	var base_fold = 100.0 - base_call
 	var modifiers: Array = []
@@ -119,22 +135,45 @@ func _calc_enemy_frequencies(_sizing: float) -> Dictionary:
 		base_call += delta
 		modifiers.append("Suspicion %+d: Call %+.0f%%" % [suspicion, delta])
 
-	var enemy_trait = _current_spot.get("enemy_trait", {})
-	var call_mod = enemy_trait.get("call_mod", 0.0)
-	var fold_mod = enemy_trait.get("fold_mod", 0.0)
-	if call_mod != 0.0:
-		base_call += call_mod
-		modifiers.append("%s: Call %+.0f%%" % [enemy_trait.get("name", "Enemy"), call_mod])
-	if fold_mod != 0.0:
-		base_fold += fold_mod
-		modifiers.append("%s: Fold %+.0f%%" % [enemy_trait.get("name", "Enemy"), fold_mod])
+	# Room enemy archetype (from EnemyData autoload)
+	var enemy_data = get_node("/root/EnemyData")
+	var room = gs.get_current_room_data()
+	var enemy = enemy_data.get_enemy(room.get("enemy", "pro_reg"))
+	var e_call = enemy.get("call_mod", 0.0)
+	var e_fold = enemy.get("fold_mod", 0.0)
+	if e_call != 0.0:
+		base_call += e_call
+		modifiers.append("%s: Call %+.0f%%" % [enemy["name"], e_call])
+	if e_fold != 0.0:
+		base_fold += e_fold
+		modifiers.append("%s: Fold %+.0f%%" % [enemy["name"], e_fold])
 
+	# Relics
 	if gs.has_relic("fear_aura"):
 		base_fold += 10.0
 		modifiers.append("Fear Aura: Fold +10%")
 	if gs.has_relic("sticky_table"):
 		base_call += 15.0
 		modifiers.append("Sticky Table: Call +15%")
+	if gs.has_relic("polarizer") and sizing >= _current_spot.get("pot", 1) * 1.5:
+		base_fold += 20.0
+		modifiers.append("Polarizer: Fold +20%")
+	if gs.has_relic("pressure_cooker") and gs.pressure_cooker_stacks > 0:
+		var pc = mini(gs.pressure_cooker_stacks * 5, 20)
+		base_fold += pc
+		modifiers.append("Pressure Cooker x%d: Fold +%d%%" % [gs.pressure_cooker_stacks, pc])
+	if gs.has_relic("short_stack_ninja") and _current_spot.get("player_stack", 100) <= 30:
+		base_fold += 10.0
+		modifiers.append("Short Stack Ninja: Fold +10%")
+	if gs.has_relic("advertising_campaign") and gs.bluff_shown_last_hand:
+		base_call += 20.0
+		modifiers.append("Advertising Campaign: Call +20%")
+	if gs.has_relic("clean_reputation") and gs.shown_only_value_this_room:
+		base_fold += 15.0
+		modifiers.append("Clean Reputation: Fold +15%")
+	if gs.has_relic("blood_in_water") and gs.blood_in_water_hands_remaining > 0:
+		base_call += 10.0
+		modifiers.append("Blood in the Water: Call +10%")
 
 	var total = base_call + base_fold
 	return {
@@ -143,6 +182,8 @@ func _calc_enemy_frequencies(_sizing: float) -> Dictionary:
 		"base_call_pct": _current_spot.get("base_call_pct", 50.0),
 		"base_fold_pct": 100.0 - _current_spot.get("base_call_pct", 50.0),
 		"modifiers": modifiers,
+		"enemy_name": enemy.get("name", ""),
+		"enemy_flavor": enemy.get("flavor", ""),
 	}
 
 
@@ -164,6 +205,10 @@ class HandResult:
 	var villain_hand: Array = []
 	var player_hand: Array = []
 	var board: Array = []
+	var pot: int = 0
+	var glass_cannon_active: bool = false
+	var enemy_name: String = ""
+	var enemy_flavor: String = ""
 
 	func variance() -> float:
 		return profit - ev
