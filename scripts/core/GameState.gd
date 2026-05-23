@@ -1,5 +1,9 @@
 extends Node
 
+func _ready() -> void:
+	await get_tree().process_frame
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+
 # Central game state — single source of truth for a run
 var bankroll: int = 1000
 var ev_score: float = 0.0
