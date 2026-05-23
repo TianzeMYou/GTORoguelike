@@ -1,0 +1,20 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; but modifying it manually is also supported.
+
+config_version=5
+
+[application]
+
+config/name="GTORoguelike"
+config/description="A Balatro-inspired GTO poker roguelike where every decision earns EV, every result earns profit, and every bluff, muck, show, relic, and all-in changes how the table plays against you."
+run/main_scene="res://scenes/ui/Main.tscn"
+config/features=PackedStringArray("4.2", "Forward Plus")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
