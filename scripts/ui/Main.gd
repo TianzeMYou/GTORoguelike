@@ -7,7 +7,7 @@ var _hand_screen: Control
 var _result_screen: Control
 
 func _ready() -> void:
-	get_tree().get_root().max_size = Vector2i(0, 0)  # 0 = no max
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 	DisplayServer.window_set_min_size(Vector2i(640, 360))
 	_show_hand_screen()
 
