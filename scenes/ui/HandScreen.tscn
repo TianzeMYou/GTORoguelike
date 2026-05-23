@@ -28,8 +28,8 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 180.0
-offset_bottom = 140.0
+offset_right = 200.0
+offset_bottom = 160.0
 
 [node name="Label" type="Label" parent="TableImage"]
 text = "TABLE IMAGE"
@@ -72,7 +72,20 @@ offset_right = 200.0
 offset_bottom = 50.0
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 18
-text = "River Bluff — Deep Stack"
+text = ""
+
+[node name="Situation" type="Label" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -300.0
+offset_top = 55.0
+offset_right = 300.0
+offset_bottom = 85.0
+horizontal_alignment = 1
+text = ""
 
 [node name="Board" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -81,9 +94,9 @@ anchor_top = 0.0
 anchor_right = 0.5
 anchor_bottom = 0.0
 offset_left = -250.0
-offset_top = 60.0
+offset_top = 100.0
 offset_right = 250.0
-offset_bottom = 160.0
+offset_bottom = 200.0
 alignment = 1
 
 [node name="PlayerHand" type="HBoxContainer" parent="."]
@@ -93,9 +106,9 @@ anchor_top = 0.0
 anchor_right = 0.5
 anchor_bottom = 0.0
 offset_left = -100.0
-offset_top = 170.0
+offset_top = 210.0
 offset_right = 100.0
-offset_bottom = 270.0
+offset_bottom = 310.0
 alignment = 1
 
 [node name="PotStackInfo" type="VBoxContainer" parent="."]
@@ -104,10 +117,10 @@ anchor_left = 0.5
 anchor_top = 0.0
 anchor_right = 0.5
 anchor_bottom = 0.0
-offset_left = -150.0
-offset_top = 280.0
-offset_right = 150.0
-offset_bottom = 360.0
+offset_left = -200.0
+offset_top = 320.0
+offset_right = 200.0
+offset_bottom = 420.0
 
 [node name="PotLabel" type="Label" parent="PotStackInfo"]
 name = "PotLabel"
@@ -119,6 +132,12 @@ name = "StackLabel"
 horizontal_alignment = 1
 text = "Stack: 140bb"
 
+[node name="VillainBetLabel" type="Label" parent="PotStackInfo"]
+name = "VillainBetLabel"
+horizontal_alignment = 1
+text = ""
+visible = false
+
 [node name="EnemyInfo" type="Label" parent="."]
 layout_mode = 1
 anchor_left = 0.5
@@ -126,11 +145,11 @@ anchor_top = 0.0
 anchor_right = 0.5
 anchor_bottom = 0.0
 offset_left = -150.0
-offset_top = 370.0
+offset_top = 430.0
 offset_right = 150.0
-offset_bottom = 400.0
+offset_bottom = 460.0
 horizontal_alignment = 1
-text = "Enemy: Scared Money"
+text = ""
 
 [node name="ActionArea" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -138,9 +157,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -220.0
-offset_right = 300.0
+offset_left = -350.0
+offset_top = -160.0
+offset_right = 350.0
 offset_bottom = -20.0
 alignment = 2
 
@@ -181,15 +200,27 @@ name = "FoldBtn"
 custom_minimum_size = Vector2(140, 60)
 text = "FOLD"
 
+[node name="CheckBtn" type="Button" parent="ActionArea/MainButtons"]
+name = "CheckBtn"
+custom_minimum_size = Vector2(140, 60)
+text = "CHECK"
+
 [node name="CallBtn" type="Button" parent="ActionArea/MainButtons"]
 name = "CallBtn"
 custom_minimum_size = Vector2(140, 60)
 text = "CALL"
+visible = false
 
 [node name="BetBtn" type="Button" parent="ActionArea/MainButtons"]
 name = "BetBtn"
 custom_minimum_size = Vector2(140, 60)
-text = "BET / RAISE"
+text = "BET"
+
+[node name="RaiseBtn" type="Button" parent="ActionArea/MainButtons"]
+name = "RaiseBtn"
+custom_minimum_size = Vector2(140, 60)
+text = "RAISE"
+visible = false
 
 [node name="EnemyRollDisplay" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -206,16 +237,16 @@ visible = false
 [node name="FreqLabel" type="Label" parent="EnemyRollDisplay"]
 name = "FreqLabel"
 horizontal_alignment = 1
-text = "Call 45% / Fold 55%"
+text = ""
 
 [node name="RollLabel" type="Label" parent="EnemyRollDisplay"]
 name = "RollLabel"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 22
-text = "Roll: 61"
+text = ""
 
 [node name="RollResultLabel" type="Label" parent="EnemyRollDisplay"]
 name = "RollResultLabel"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 18
-text = "→ Fold"
+text = ""

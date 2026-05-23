@@ -19,17 +19,28 @@ func _ready() -> void:
 	_engine.start_hand(_spot)
 
 	$ActionArea/MainButtons/FoldBtn.pressed.connect(_on_fold)
+	$ActionArea/MainButtons/CheckBtn.pressed.connect(_on_check)
 	$ActionArea/MainButtons/CallBtn.pressed.connect(_on_call)
 	$ActionArea/MainButtons/BetBtn.pressed.connect(_on_bet_pressed)
+	$ActionArea/MainButtons/RaiseBtn.pressed.connect(_on_bet_pressed)
 
 	for btn in $ActionArea/SizingMeter.get_children():
 		btn.pressed.connect(_on_sizing_chosen.bind(btn.name))
 
 func _setup_ui() -> void:
 	$SpotName.text = _spot.get("name", "")
+	$Situation.text = _spot.get("situation", "")
 	$EnemyInfo.text = "Enemy: " + _spot.get("enemy_trait", {}).get("name", "Unknown")
 	$PotStackInfo/PotLabel.text = "Pot: %dbb" % _spot.get("pot", 0)
 	$PotStackInfo/StackLabel.text = "Stack: %dbb" % _spot.get("player_stack", 0)
+
+	if _spot.get("action_type") == "call":
+		$PotStackInfo/VillainBetLabel.text = "Villain bet: %dbb  |  To call: %dbb" % [
+			_spot.get("villain_bet", 0), _spot.get("amount_to_call", 0)
+		]
+		$PotStackInfo/VillainBetLabel.visible = true
+	else:
+		$PotStackInfo/VillainBetLabel.visible = false
 
 	var gs = get_node("/root/GameState")
 	$TableImage/FearLabel.text = "Fear: %d" % gs.table_image["fear"]
@@ -39,6 +50,15 @@ func _setup_ui() -> void:
 
 	_build_card_display($Board, _spot.get("board", []))
 	_build_card_display($PlayerHand, _spot.get("player_hand", []))
+	_update_action_buttons()
+
+func _update_action_buttons() -> void:
+	var is_call_spot = _spot.get("action_type") == "call"
+	$ActionArea/MainButtons/CheckBtn.visible = not is_call_spot
+	$ActionArea/MainButtons/BetBtn.visible = not is_call_spot
+	$ActionArea/MainButtons/CallBtn.visible = is_call_spot
+	$ActionArea/MainButtons/RaiseBtn.visible = is_call_spot
+	# Fold always visible
 
 func _build_card_display(container: Node, cards: Array) -> void:
 	for child in container.get_children():
@@ -54,6 +74,9 @@ func _build_card_display(container: Node, cards: Array) -> void:
 
 func _on_fold() -> void:
 	_engine.player_action("fold")
+
+func _on_check() -> void:
+	_engine.player_action("check")
 
 func _on_call() -> void:
 	_engine.player_action("call")
@@ -77,7 +100,6 @@ func _on_enemy_responding(call_pct: float, fold_pct: float, roll: int) -> void:
 	roll_display.get_node("RollLabel").text = "Roll: %d" % roll
 	roll_display.get_node("RollResultLabel").text = "→ %s" % ("Call" if roll < call_pct else "Fold")
 	$ActionArea.visible = false
-	await get_tree().create_timer(1.8).timeout
 
 func _on_hand_resolved(result: Object) -> void:
 	var gs = get_node("/root/GameState")

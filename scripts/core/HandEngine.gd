@@ -1,53 +1,42 @@
 extends Node
 
-# Drives a single poker hand: deal → decisions → resolve → result
-
-signal hand_started(player_hand: Array, board: Array, pot: int, player_stack: int, enemy_stack: int)
-signal decision_requested(actions: Array)
+signal hand_started(spot: Dictionary)
 signal enemy_responding(call_pct: float, fold_pct: float, roll: int)
-signal hand_resolved(result: HandResult)
+signal hand_resolved(result: Object)
 
-var player_stack: int = 100
-var enemy_stack: int = 100
-var pot: int = 0
-var player_hand: Array = []
-var board: Array = []
-var _current_spot: Dictionary = {}
+var _current_spot: Dictionary
 
 func start_hand(spot: Dictionary) -> void:
 	_current_spot = spot
-	player_stack = spot.get("player_stack", 100)
-	enemy_stack = spot.get("enemy_stack", 100)
-	pot = spot.get("pot", 0)
-	player_hand = spot.get("player_hand", [])
-	board = spot.get("board", [])
-	emit_signal("hand_started", player_hand, board, pot, player_stack, enemy_stack)
-	emit_signal("decision_requested", _get_available_actions())
-
-func _get_available_actions() -> Array:
-	return ["fold", "call", "bet"]
+	emit_signal("hand_started", spot)
 
 func player_action(action: String, sizing: float = 0.0) -> void:
 	match action:
-		"fold":
-			_resolve_fold()
-		"call":
-			_resolve_call()
-		"bet":
-			_resolve_bet(sizing)
+		"fold":   _resolve_fold()
+		"check":  _resolve_check()
+		"call":   _resolve_call()
+		"bet":    _resolve_bet(sizing)
+		"raise":  _resolve_bet(sizing)  # raise uses same bet resolution
 
 func _resolve_fold() -> void:
 	var result = HandResult.new()
+	result.action_taken = "fold"
 	result.profit = -_current_spot.get("amount_to_call", 0)
 	result.ev = _current_spot.get("ev_fold", -5)
-	result.action_taken = "fold"
+	emit_signal("hand_resolved", result)
+
+func _resolve_check() -> void:
+	var result = HandResult.new()
+	result.action_taken = "check"
+	result.profit = 0
+	result.ev = _current_spot.get("ev_check", -8)
 	emit_signal("hand_resolved", result)
 
 func _resolve_call() -> void:
 	var result = HandResult.new()
+	result.action_taken = "call"
 	result.profit = _current_spot.get("call_profit", 0)
 	result.ev = _current_spot.get("ev_call", 0)
-	result.action_taken = "call"
 	emit_signal("hand_resolved", result)
 
 func _resolve_bet(sizing: float) -> void:
@@ -65,11 +54,11 @@ func _resolve_bet(sizing: float) -> void:
 	result.roll = roll
 
 	if enemy_calls:
-		result.profit = _current_spot.get("bet_called_profit", -int(sizing))
-		result.ev = _current_spot.get("ev_bet_called", 0)
+		result.profit = _current_spot.get("bet_called_profit", _current_spot.get("raise_called_profit", -int(sizing)))
+		result.ev = _current_spot.get("ev_bet_called", _current_spot.get("ev_raise_called", 0))
 	else:
-		result.profit = pot
-		result.ev = _current_spot.get("ev_bet_fold", sizing)
+		result.profit = _current_spot.get("pot", 0)
+		result.ev = _current_spot.get("ev_bet_fold", _current_spot.get("ev_raise_fold", sizing))
 
 	emit_signal("hand_resolved", result)
 
@@ -77,23 +66,19 @@ func _calc_enemy_frequencies(sizing: float) -> Dictionary:
 	var base_call = _current_spot.get("base_call_pct", 50.0)
 	var base_fold = 100.0 - base_call
 
-	# Table image modifiers
 	var gs = get_node("/root/GameState")
 	base_fold += gs.table_image["fear"] * 3.0
 	base_call += gs.table_image["suspicion"] * 3.0
 
-	# Enemy trait modifiers
 	var enemy_trait = _current_spot.get("enemy_trait", {})
 	base_call += enemy_trait.get("call_mod", 0.0)
 	base_fold += enemy_trait.get("fold_mod", 0.0)
 
-	# Relic modifiers
 	if gs.has_relic("fear_aura"):
 		base_fold += 10.0
 	if gs.has_relic("sticky_table"):
 		base_call += 15.0
 
-	# Normalize
 	var total = base_call + base_fold
 	return {
 		"call_pct": clamp(base_call / total * 100.0, 0.0, 100.0),
