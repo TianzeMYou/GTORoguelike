@@ -22,21 +22,26 @@ func _resolve_fold() -> void:
 	var result = HandResult.new()
 	result.action_taken = "fold"
 	result.profit = -_current_spot.get("amount_to_call", 0)
-	result.ev = _current_spot.get("ev_fold", -5)
+	result.ev = _current_spot.get("ev_fold", -float(_current_spot.get("amount_to_call", 0)))
 	emit_signal("hand_resolved", result)
 
 func _resolve_check() -> void:
 	var result = HandResult.new()
 	result.action_taken = "check"
 	result.profit = 0
-	result.ev = _current_spot.get("ev_check", -8)
+	result.ev = _current_spot.get("ev_check", 0.0)
 	emit_signal("hand_resolved", result)
 
 func _resolve_call() -> void:
 	var result = HandResult.new()
 	result.action_taken = "call"
-	result.profit = _current_spot.get("call_profit", 0)
-	result.ev = _current_spot.get("ev_call", 0)
+	var pot = _current_spot.get("pot", 0)
+	var villain_bet = _current_spot.get("villain_bet", 0)
+	var to_call = _current_spot.get("amount_to_call", villain_bet)
+	var equity = _current_spot.get("equity", 0.5)
+	# EV(call) = equity × (pot + villain_bet + to_call) - to_call
+	result.ev = equity * (pot + villain_bet + to_call) - to_call
+	result.profit = pot + villain_bet if randf() < equity else -to_call
 	emit_signal("hand_resolved", result)
 
 func _resolve_bet(sizing: float) -> void:
@@ -56,12 +61,18 @@ func _resolve_bet(sizing: float) -> void:
 	result.base_fold_pct = freq_data.base_fold_pct
 	result.modifiers = freq_data.modifiers
 
+	var pot = _current_spot.get("pot", 0)
+	var equity = _current_spot.get("equity", 0.5)
+	var fold_pct = freq_data.fold_pct / 100.0
+	var call_pct = freq_data.call_pct / 100.0
+
+	# EV(bet) = fold% × pot + call% × (equity × (pot + 2×bet) - bet)
+	result.ev = fold_pct * pot + call_pct * (equity * (pot + 2.0 * sizing) - sizing)
+
 	if enemy_calls:
-		result.profit = _current_spot.get("bet_called_profit", _current_spot.get("raise_called_profit", -int(sizing)))
-		result.ev = _current_spot.get("ev_bet_called", _current_spot.get("ev_raise_called", 0))
+		result.profit = pot + sizing if randf() < equity else -sizing
 	else:
-		result.profit = _current_spot.get("pot", 0)
-		result.ev = _current_spot.get("ev_bet_fold", _current_spot.get("ev_raise_fold", sizing))
+		result.profit = pot
 
 	emit_signal("hand_resolved", result)
 

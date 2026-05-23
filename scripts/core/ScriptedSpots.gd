@@ -1,10 +1,9 @@
 extends Node
 
-# MVP scripted decision spots — hand-authored for early prototype
-# action_type: "bet" = you act first (Bet/Fold), "call" = facing a villain bet (Call/Raise/Fold)
+# action_type: "bet" = you act first (Bet/Check/Fold), "call" = facing a villain bet (Call/Raise/Fold)
+# equity: your probability of winning at showdown (0.0 - 1.0). Used to compute EV dynamically.
 
 const SPOTS: Array = [
-	# --- You act first: Bet or Check/Fold ---
 	{
 		"id": "river_bluff_deep",
 		"name": "River Bluff Spot",
@@ -17,11 +16,9 @@ const SPOTS: Array = [
 		"enemy_stack": 140,
 		"amount_to_call": 0,
 		"base_call_pct": 45.0,
+		"equity": 0.08,  # missed draw — almost never wins at showdown
 		"enemy_trait": {"name": "Scared Money", "fold_mod": 10.0, "call_mod": 0.0},
-		"ev_check": -8,
-		"ev_bet_fold": 14,
-		"ev_bet_called": -8,
-		"bet_called_profit": -60,
+		"ev_check": -8.0,
 	},
 	{
 		"id": "value_bet_river",
@@ -35,13 +32,10 @@ const SPOTS: Array = [
 		"enemy_stack": 100,
 		"amount_to_call": 0,
 		"base_call_pct": 55.0,
+		"equity": 0.82,  # top pair top kicker — strong favourite
 		"enemy_trait": {"name": "Calling Station", "fold_mod": 0.0, "call_mod": 15.0},
-		"ev_check": 2,
-		"ev_bet_fold": 2,
-		"ev_bet_called": 18,
-		"bet_called_profit": 60,
+		"ev_check": 2.0,
 	},
-	# --- Facing a villain bet: Call, Raise, or Fold ---
 	{
 		"id": "facing_river_bet",
 		"name": "Facing River Bet",
@@ -55,13 +49,12 @@ const SPOTS: Array = [
 		"enemy_stack": 100,
 		"amount_to_call": 20,
 		"base_call_pct": 50.0,
+		"equity": 0.38,  # second pair vs polarised range
 		"enemy_trait": {"name": "Maniac", "fold_mod": 0.0, "call_mod": 0.0},
-		"ev_fold": -5,
-		"ev_call": 4,
-		"ev_raise_fold": 12,
-		"ev_raise_called": -18,
+		"ev_fold": -5.0,
+		"ev_raise_fold": 12.0,
+		"ev_raise_called": -18.0,
 		"raise_called_profit": -100,
-		"call_profit": 30,
 	},
 	{
 		"id": "facing_turn_cbet",
@@ -76,15 +69,13 @@ const SPOTS: Array = [
 		"enemy_stack": 80,
 		"amount_to_call": 15,
 		"base_call_pct": 50.0,
+		"equity": 0.36,  # flush draw ~36% equity on turn
 		"enemy_trait": {"name": "Pro Reg", "fold_mod": 0.0, "call_mod": 0.0},
-		"ev_fold": -6,
-		"ev_call": 8,
-		"ev_raise_fold": 14,
-		"ev_raise_called": 2,
+		"ev_fold": -6.0,
+		"ev_raise_fold": 14.0,
+		"ev_raise_called": 2.0,
 		"raise_called_profit": 20,
-		"call_profit": 20,
 	},
-	# --- Shove/Fold preflop ---
 	{
 		"id": "shove_or_fold_short",
 		"name": "Short Stack Shove/Fold",
@@ -98,13 +89,12 @@ const SPOTS: Array = [
 		"enemy_stack": 25,
 		"amount_to_call": 2,
 		"base_call_pct": 40.0,
+		"equity": 0.55,  # AJo slight favourite vs villain's open range
 		"enemy_trait": {"name": "Pro Reg", "fold_mod": 0.0, "call_mod": 0.0},
-		"ev_fold": -1,
-		"ev_call": 1,
-		"ev_raise_fold": 8,
-		"ev_raise_called": 4,
+		"ev_fold": -1.0,
+		"ev_raise_fold": 8.0,
+		"ev_raise_called": 4.0,
 		"raise_called_profit": 25,
-		"call_profit": 4,
 	},
 ]
 
