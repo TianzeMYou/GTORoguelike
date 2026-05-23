@@ -103,6 +103,28 @@ horizontal_alignment = 1
 theme_override_font_sizes/font_size = 20
 text = ""
 
+[node name="ShowdownSection" type="VBoxContainer" parent="Panel"]
+name = "ShowdownSection"
+visible = false
+
+[node name="ShowdownTitle" type="Label" parent="Panel/ShowdownSection"]
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+modulate = Color(0.8, 0.8, 0.8, 1)
+text = "Showdown"
+
+[node name="VillainHandLabel" type="Label" parent="Panel/ShowdownSection"]
+name = "VillainHandLabel"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+text = ""
+
+[node name="ShowdownResultLabel" type="Label" parent="Panel/ShowdownSection"]
+name = "ShowdownResultLabel"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+text = ""
+
 [node name="Divider2" type="HSeparator" parent="Panel"]
 
 [node name="ImageDeltaLabel" type="Label" parent="Panel"]

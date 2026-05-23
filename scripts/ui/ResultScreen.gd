@@ -33,6 +33,15 @@ func show_result(result: Object) -> void:
 		$Panel/ActionLabel.text = "You folded"
 		$Panel/EnemySection.visible = false
 
+	if result.showdown:
+		var villain_cards = " ".join(result.villain_hand) if result.villain_hand.size() > 0 else "?? ??"
+		$Panel/ShowdownSection/VillainHandLabel.text = "Villain shows: %s" % villain_cards
+		$Panel/ShowdownSection/ShowdownResultLabel.text = "You win the pot" if result.player_wins else "Villain wins the pot"
+		$Panel/ShowdownSection/ShowdownResultLabel.modulate = Color.GREEN if result.player_wins else Color.RED
+		$Panel/ShowdownSection.visible = true
+	else:
+		$Panel/ShowdownSection.visible = false
+
 	# Muck/show only after winning a bet without showdown
 	if result.action_taken == "bet" and not result.enemy_called:
 		$Panel/MuckShowButtons.visible = true

@@ -39,9 +39,11 @@ func _resolve_call() -> void:
 	var villain_bet = _current_spot.get("villain_bet", 0)
 	var to_call = _current_spot.get("amount_to_call", villain_bet)
 	var equity = _current_spot.get("equity", 0.5)
-	# EV(call) = equity × (pot + villain_bet + to_call) - to_call
 	result.ev = equity * (pot + villain_bet + to_call) - to_call
-	result.profit = pot + villain_bet if randf() < equity else -to_call
+	result.player_wins = randf() < equity
+	result.profit = pot + villain_bet if result.player_wins else -to_call
+	result.showdown = true
+	result.villain_hand = _current_spot.get("villain_hand", [])
 	emit_signal("hand_resolved", result)
 
 func _resolve_bet(sizing: float) -> void:
@@ -70,9 +72,13 @@ func _resolve_bet(sizing: float) -> void:
 	result.ev = fold_pct * pot + call_pct * (equity * (pot + 2.0 * sizing) - sizing)
 
 	if enemy_calls:
-		result.profit = pot + sizing if randf() < equity else -sizing
+		result.player_wins = randf() < equity
+		result.profit = pot + sizing if result.player_wins else -sizing
+		result.showdown = true
+		result.villain_hand = _current_spot.get("villain_hand", [])
 	else:
 		result.profit = pot
+		result.showdown = false
 
 	emit_signal("hand_resolved", result)
 
@@ -135,6 +141,9 @@ class HandResult:
 	var base_fold_pct: float = 0.0
 	var modifiers: Array = []
 	var roll: int = 0
+	var showdown: bool = false
+	var player_wins: bool = false
+	var villain_hand: Array = []
 
 	func variance() -> float:
 		return profit - ev
